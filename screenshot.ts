@@ -1,10 +1,10 @@
-import { NowRequest, NowResponse } from '@now/node'
+import { Request, Response } from 'express'
 import chrome from 'chrome-aws-lambda'
-import puppeteer from 'puppeteer-core'
+import puppeteer from 'puppeteer'
 
 import extractTweetData from './extractTweetData'
 
-export default async (req: NowRequest, res: NowResponse) => {
+export default async (req: Request, res: Response) => {
   const tweetData = await extractTweetData(req, res)
 
   try {
@@ -27,7 +27,7 @@ export default async (req: NowRequest, res: NowResponse) => {
         })
     }
 
-    const browser = await puppeteer.launch(options)
+    const browser = await puppeteer.launch({ args: ['--no-sandbox --headless'] })
 
     const page = await browser.newPage()
     await page.goto(`${req.headers['x-forwarded-proto']}://${req.headers['x-now-deployment-url']}/tweet?tweetData=${JSON.stringify(tweetData)}&style=${req.query.style || ''}`)

@@ -1,6 +1,6 @@
 import express from 'express'
 const twemoji = require('twemoji')
-
+import screenshot from './screenshot'
 /**
  * Convert a text's emojis to twitter SVG emojis (chrome-aws-lambda does not support emojis)
  * @param text Any text containing unicode emojis
@@ -15,9 +15,9 @@ const app = express()
 app.set('views', __dirname + '/tweet')
 app.set('view engine', 'ejs')
 app.engine('ejs', require('ejs').renderFile)
-
-app.use('/assets', express.static(__dirname + '/tweet/assets'))
-
+app.use('/screenshot', screenshot )
+app.use('/tweet/assets', express.static(__dirname + '/tweet/assets'))
+app.use('/', express.static(__dirname + '/public'))
 app.get('/tweet', async (req, res) => {
   // Load the tweet data from the url `tweetData` JSON query object
   const tweetData = await extractTweetData(req, res)
@@ -37,4 +37,4 @@ app.get('/tweet', async (req, res) => {
   else res.render('classic', { tweetData: { ...tweetDataEmojified } })
 })
 
-app.listen()
+app.listen('8080')
